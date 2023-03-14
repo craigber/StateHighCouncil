@@ -1,0 +1,288 @@
+﻿@model StateHighCouncil.Web.Models.LegislatorViewModel
+
+<div class="row">
+    <div class="col-10">
+        <div class="row">
+        <div class="col-1">
+            <h1>@Html.DisplayFor(model => model.District)</h1><DirectedGraph xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+        </div>
+        <div class="col-11">
+            <div class="row">
+                <h1>
+                    Rep. @Html.DisplayFor(model => model.Name)
+                    @if (Model.Party == "R")
+                    {
+                        <img src="\images\republicanlogo.jpg" style="width:30px;height:30px" />
+                    }
+                    @if (Model.Party == "D")
+                    {
+                        <img src="\images\democraticlogo.png" style="width:30px;height:30px" />
+                    }
+                    @if (Model.Religion == "LDS")
+                    {
+                        <img src="\images\lds.png" style="width:30px;height:30px" />
+                    }
+                </h1>
+            </div>
+            <div class="row">
+                <h6>@Model.Position</h6>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <b>Counties - </b>@Html.DisplayFor(model => model.Counties)
+                </div>
+                <div class="col-6">
+                    <b>Service Start - </b>@Html.DisplayFor(model => model.ServiceStart)
+                </div>
+            </div>
+        </div>
+        <hr />
+            <div class="row">
+                <div class="col-1">
+                    <b>Address</b>
+                </div>
+                <div class="col-11">
+                    @Html.DisplayFor(model => model.Address)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-1">
+                    <b>Email</b>
+                </div>
+                <div class="col-11">
+                    <a href=mailto:"@Model.Email">@Html.DisplayFor(model => model.Email)</a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-1">
+                    <b>Cell</b>
+                </div>
+                <div class="col-11">
+                    @Html.DisplayFor(model => model.Cell)
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.WorkPhone))
+            {
+                <div class="row">
+                    <div class="col-1">
+                        <b>Work</b>
+                    </div>
+                    <div class="col-11">
+                        @Html.DisplayFor(model => model.WorkPhone)
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.HomePhone))
+            {
+                <div class="row">
+                    <div class="col-1">
+                        <b>Home</b>
+                    </div>
+                    <div class="col-11">
+                        @Html.DisplayFor(model => model.HomePhone)
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Fax))
+            {
+                <div class="row">
+                    <div class="col-1">
+                        <b>Fax</b>
+                    </div>
+                    <div class="col-11">
+                        @Html.DisplayFor(model => model.Fax)
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-3">
+                    <a href="@Model.DemographicUrl" target="_blank" rel="noopener noreferrer">District Demographics</a>
+                </div>
+                <div class="col-2">
+                    <a href="@Model.LegislationUrl" target="_blank" rel="noopener noreferrer">Legislation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-2">
+        <img src="@Model.ImageUrl" style="width:150px;height:200px" />
+    </div>
+</div>
+
+<div class="mt-4">
+    <h4>Committee Assignments</h4>
+    <div>
+        @if(Model.Committees != null && Model.Committees.Any())
+        {
+            @foreach(var comm in Model.Committees)
+            {
+                <div class="row">
+                    <a href="@comm.Url" target="_blank" rel="noopener noreferrer">@comm.Name</a>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <h4>Bills</h4>
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                <th scope="col">Number</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Sponsor</th>
+                    <th scope="col">Last Action</th>
+                    <th scope="col">Last Action Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Tracked</th>                
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var bill in Model.Bills)
+                {
+                    <tr itemscope="row">
+                        <td>
+                            <div>@bill.Number</div>
+                            <div>
+                                @if (@bill.WhenPassed > new DateTime(1, 1, 1))
+                                {
+                                    <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
+                                }
+                            </div>
+                            <div class="row">
+                                @if (bill.IsTracked)
+                                {
+                                    <span><span class="badge bg-primary" id=@("badge"+bill.Id) type="button" onclick="ToggleTracking(@bill.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+bill.Id)></i> Tracking</span> | Clear</span>
+                                }
+                                @if (!bill.IsTracked)
+                                {
+                                    <span><button id=@("badge"+bill.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@bill.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+bill.Id)></i> Tracking</button> | Clear</span>
+                                }
+                            </div>
+                            <div>
+                                @if (bill.Status == "Updated")
+                                {
+                                    <span class="badge bg-warning mt=12"><i class="fa-regular fa-circle-exclamation"></i> Updated</span>
+                                }
+                            </div>
+                            <div>
+                                @if (bill.Status == "New")
+                                {
+                                    <span class="badge bg-danger mt=12"><i class="fa-regular fa-file-circle-plus"></i> New!</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <a href="@bill.BillUrl" target="_blank" rel="noopener noreferrer">@bill.Title</a>
+                            </div>
+                            <div>
+                                @bill.GeneralProvisions
+                            </div>
+                        </td>
+                        <td>@bill.Sponsor</td>
+                        <td>@bill.LastAction</td>
+                        <td>@bill.LastActionTime</td>
+                        <td>@bill.Status</td>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h4>Personal and Career Information</h4>
+        
+    @if (!string.IsNullOrEmpty(Model.Education))
+    {
+        <div class="row">
+            <div class="col-12">
+                <b>Education - </b>@Html.DisplayFor(model => model.Education)
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.Profession))
+    {
+        <div class="row">
+            <div class="col-12">
+                <b>Profession - </b>@Html.DisplayFor(model => model.Profession)
+            </div>
+        </div>
+    }
+        
+    @if (!string.IsNullOrEmpty(Model.ProfessionalAffiliations))
+    {
+        <div class="row">
+            <div class="col-12">
+                <b>Professional Affiliations - </b>@Html.DisplayFor(model => model.ProfessionalAffiliations)
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.RecognitionsAndHonors))
+    {
+        <div class="row">
+            <div class="col-12">
+                <b>Recognitions and Honors - </b>@Html.DisplayFor(model => model.RecognitionsAndHonors)
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Bio))
+    {
+        <div class="row">
+            <div class="col-12">
+                <b>Biography - </b>@Html.DisplayFor(model => model.Bio)
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <h4>Financial Reports</h4>
+    @if (Model.FinanceReports != null)
+    {
+        <div>
+            @foreach (var fd in Model.FinanceReports)
+            {
+                <div class="row">
+                    <a href="@fd.FinanceReportUrl" target="_blank" rel="noopener noreferrer">@fd.FinanceReportUrl</a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <h4>Conflicts of Interest</h4>
+    @if (Model.Conflicts != null)
+    {
+        <div>
+            @foreach (var conflict in Model.Conflicts)
+            {
+                <div class="row">
+                    <a href="@conflict.ConflictUrl" target="_blank" rel="noopener noreferrer">@conflict.ConflictUrl</a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to Roster    </a>
+</div>

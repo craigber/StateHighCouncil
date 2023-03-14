@@ -1,0 +1,61 @@
+﻿@model IEnumerable<StateHighCouncil.Web.Models.LegislatorListViewModel>
+
+<h1>@ViewData["Title"]</h1>
+
+@foreach (var item in Model) {
+    <div class="container">
+        <div class="row justify-content-start mb-4 py-3 bg-light">
+            <div class="col-1">
+                <h1>
+                @Html.DisplayFor(modelItem => item.District)
+                </h1>
+            </div>
+            <div class="col-1 mr-2">                    
+                <img src="@item.ImageUrl" style="width:75px;height:100px"/>
+            </div>
+            <div class="col-4">
+                <div>
+                    <h4>
+                        <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>                     
+                        @if (item.Party == "R")
+                        {
+                            <img src="images\republicanlogo.jpg" style="width:25px;height:25px" />
+                        }
+                        @if (item.Party == "D")
+                        {
+                            <img src="images\democraticlogo.png" style="width:25px;height:25px" />
+                        }
+                        @if (item.Religion == "LDS")
+                        {
+                            <img src="images\lds.png" style="width:25px;height:25px" />
+                        }
+                    </h4>
+                </div>
+                <div>
+                    @Html.DisplayFor(modelItem => item.Position)
+                </div>
+                <div>
+                    @Html.DisplayFor(modelItem => item.ServiceStart)
+                </div>
+                <div>
+                    @Html.DisplayFor(modelItem => item.Counties)
+                </div>
+            </div>
+            <div class="col-4">
+                <div>
+                    @Html.DisplayFor(modelItem => item.Profession)
+                </div>
+                <div>
+                    @Html.DisplayFor(modelItem => item.Education)
+                </div>
+            </div>
+            <div class="col-1">
+                @Html.DisplayFor(modelItem => item.Status)
+            </div>
+            <div class="col-1">
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+            </div>
+        </div>
+    </div>
+}
+

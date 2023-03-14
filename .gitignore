@@ -1,0 +1,7 @@
+/.cr
+/.vs
+/StateHighCouncil.Web/bin
+/StateHighCouncil.Web/obj
+/*.db
+/*.db-shm
+/*.db-wal
