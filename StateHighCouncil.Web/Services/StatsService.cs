@@ -24,7 +24,7 @@ public class StatsService : IStatsService
             .ToList();
     }
 
-    public StatsTotalItem CountByParty(string party)
+    public StatsTotalItem CountByParty(string party, bool passedOnly = false)
     {
         var retVal = new StatsTotalItem
         {
@@ -34,7 +34,14 @@ public class StatsService : IStatsService
 
         foreach (var l in _legislators.Where(l => l.Party == party))
         {
-            if (l.Party == party)
+            if (l.Party == party && passedOnly)
+            {
+                retVal.Value += _bills
+                    .Where(b => b.SponsorId == l.Id
+                        && b.WhenPassed > new DateTime(1, 1, 1))
+                    .Count();
+            }
+            else if (l.Party == party)
             {
                 retVal.Value += _bills.Where(b => b.SponsorId == l.Id).Count();
             }

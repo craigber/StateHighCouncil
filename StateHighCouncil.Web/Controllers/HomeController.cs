@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.IdentityModel.Tokens;
 using StateHighCouncil.Web.Services;
 using StateHighCouncil.Web.Models;
+using System.Text.Json;
 
 namespace StateHighCouncil.Web.Controllers;
 
@@ -36,15 +37,8 @@ public class HomeController : Controller
     {
         ViewData["SessionMessage"] = _alertService.GetSessionMessage();
 
-        var viewModel = new DashboardViewModel();
-
-        viewModel.DemBillCount = _statsService.CountByParty("D");
-        viewModel.RepBillCount = _statsService.CountByParty("R");
-        viewModel.Top10Legislators = _statsService.TopNLegislators(10);
-        viewModel.Top10Subjects = _statsService.TopNSubjects(10);
-        
-        return View(viewModel);
-    }   
+        return View();
+    }
 
     public async Task<IActionResult> UpdateStateData()
     {

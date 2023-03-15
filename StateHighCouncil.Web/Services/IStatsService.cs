@@ -4,7 +4,7 @@ namespace StateHighCouncil.Web.Services
 {
     public interface IStatsService
     {
-        public StatsTotalItem CountByParty(string party);
+        public StatsTotalItem CountByParty(string party, bool passedOnly = false);
         public List<StatsTotalItem> TopNLegislators(int count);
         public List<StatsTotalItem> TopNSubjects(int count);
     }
