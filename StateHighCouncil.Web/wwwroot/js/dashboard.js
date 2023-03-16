@@ -1,50 +1,45 @@
 //import Chart from '/Chart.js/chart.umd.js'
 
 function billCountsByParty() {
-    (async() => {
+    (async () => {
         const response = await fetch('/Api/Stats/BillCountsByParty');
         const data = await response.json();
-        
+        repData = [data.republican[0].value, data.republican[1].value];
+        demData = [data.democrat[0].value, data.democrat[1].value];
         const ctx = document.getElementById('billsByParty');
-        
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
 
-                labels: ['Republicans', 'Democrats'],
-                datasets: [{
-                    label: 'Filed',
-                    data: data.map(row => row.Filed),
-                    backgroundColor: '#0000ff50',
-                    borderwidth: 1,
-                    parsing: {
-                        yAxisKey: 'Filed'
-                    }
-                    
-                },
-                {
-                    label: 'Passed',
-                    data: data.map(row => row.Passed),
-                    backgroundColor: '#034e0050',
-                    borderwidth: 1,
-                    parsing: {
-                        yAxisKey: 'Passed'
-                    }
-                }]
+        var options = {
+            chart: {
+                type: 'bar'
             },
-            options: {
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Number of Bills'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
+            colors: ['#FF0000', '#0000FF'],
+            xaxis: {
+                categories: ["Filed", "Passed"]
+            },
+            fill: {
+                opacity: .6
+            },
+            title: {
+                text: "Number of bills by party",
+                align: 'center'
+            },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        position: 'top'
                     }
                 }
-            }
-        });        
-    })();
+            },
+            series: [{
+                name: "Republican",
+                data: repData //[700, 450]
+            }, {
+                name: "Democrat",
+                data: demData //[250, 175]
+            }]
+        }
+
+        var chart = new ApexCharts(ctx, options);
+        chart.render();
+    })()
 }

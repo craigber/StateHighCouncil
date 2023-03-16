@@ -1,18 +1,22 @@
 ﻿@model StateHighCouncil.Web.Models.DashboardViewModel
 
+<link href="~/lib/apexcharts/apexcharts.css" rel="stylesheet" />
+
 @{
     ViewData["Title"] = "State High Council";
 }
 
 <div>
     <h1 class="display-4 text-center">Welcome to The State High Council</h1>
-    <div class="row"  style="min-height: 300px;">
-        <div class="col-6 border">
-            <canvas id="billsByParty"></canvas>
-        </div>
-        <div class="col-2">
-        </div
-        <div class="col-4">
+    <div class="bg-light mt-3 p-3">
+        <div class="row" tyle="min-height: 300px;">
+            <div class="col-6 border m-3">
+                <div id="billsByParty"></div>
+            </div>
+            <div class="col-2">
+            </div
+            <div class="col-4">
+            </div>
         </div>
     </div>
 
@@ -21,9 +25,8 @@
 
 </div>
 
-<script src="~/lib/chart.js/chart.umd.js"></script>
 <script src="~/js/dashboard.js"></script>
-
+<script src="~/lib/apexcharts/apexcharts.min.js"></script>
 <script>
     window.addEventListener("load", () => {
         billCountsByParty();

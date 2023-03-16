@@ -1,6 +1,6 @@
-﻿namespace StateHighCouncil.Web.Models;
+﻿namespace StateHighCouncil.Web.Models.Stats;
 
-public class StatsTotalItem
+public class StatsItem
 {
     public string Description { get; set; }
     public int Value { get; set; }

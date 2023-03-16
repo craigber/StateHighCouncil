@@ -16,35 +16,12 @@ namespace StateHighCouncil.Web.Controllers
             _statsService = statsService;
         }
 
-        public string BillCountsByParty()
+        public JsonResult BillCountsByParty()
         {
-            var counts = new List<BillCountByPartyItem>();
-            var first = new BillCountByPartyItem
-            {
-                X = "Republicans",
-                Filed = _statsService.CountByParty("R").Value,
-                Passed = _statsService.CountByParty("R", true).Value
-            };
-            counts.Add(first);
-
-            var second = new BillCountByPartyItem
-            {
-                X = "Democrats",
-                Filed = _statsService.CountByParty("D").Value,
-                Passed = _statsService.CountByParty("D", true).Value
-            };
-            counts.Add(second);
-
+            var counts = _statsService.BillCountsByParty();
             var retVal = JsonSerializer.Serialize(counts).ToString();
 
-            return retVal;
+            return Json(counts);
         }
     }
-}
-
-public class BillCountByPartyItem
-{
-    public string X { get; set; }
-    public int Filed { get; set; }
-    public int Passed { get; set; }
 }

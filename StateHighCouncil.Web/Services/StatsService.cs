@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using StateHighCouncil.Web.Data;
 using StateHighCouncil.Web.Models;
+using StateHighCouncil.Web.Models.Stats;
 
 namespace StateHighCouncil.Web.Services;
 
@@ -24,88 +26,99 @@ public class StatsService : IStatsService
             .ToList();
     }
 
-    public StatsTotalItem CountByParty(string party, bool passedOnly = false)
+    public TotalsByParty BillCountsByParty()
     {
-        var retVal = new StatsTotalItem
+        var totals = new TotalsByParty
         {
-            Description = party,
-            Value = 0
+            Republican = new List<StatsItem>(),
+            Democrat = new List<StatsItem>()
         };
 
-        foreach (var l in _legislators.Where(l => l.Party == party))
+        var repListed = new StatsItem { Description = "Listed", Value = 0 };
+        var repPassed = new StatsItem { Description = "Passed", Value = 0 };
+        var demListed = new StatsItem { Description = "Listed", Value = 0 };
+        var demPassed = new StatsItem { Description = "Passed", Value = 0 }; ;
+        
+        foreach(var bill in _bills)
         {
-            if (l.Party == party && passedOnly)
+            var legislator = _legislators.FirstOrDefault(l => l.Id == bill.SponsorId);
+            if (legislator.Party == "R")
             {
-                retVal.Value += _bills
-                    .Where(b => b.SponsorId == l.Id
-                        && b.WhenPassed > new DateTime(1, 1, 1))
-                    .Count();
+                repListed.Value++;
+                repPassed.Value += (bill.WhenPassed > new DateTime(1, 1, 1) ? 1 : 0);
             }
-            else if (l.Party == party)
+            else //if(legislator.Party == "D")
             {
-                retVal.Value += _bills.Where(b => b.SponsorId == l.Id).Count();
+                demListed.Value++;
+                demPassed.Value += (bill.WhenPassed > new DateTime(1, 1, 1) ? 1 : 0);
             }
+
         }
 
-        return retVal;
-    }
+        totals.Republican.Add(repListed);
+        totals.Republican.Add(repPassed);
+        totals.Democrat.Add(demListed);
+        totals.Democrat.Add(demPassed);
 
-    public List<StatsTotalItem> TopNLegislators(int count)
-    {
-        count = count == 0 ? _legislators.Count() : count;
-
-        var bills = _bills.GroupBy(b => b.SponsorId)
-            .Select(x => new
-            {
-                SponsorId = x.Key,
-                Count = x.Count()
-            }).OrderByDescending(c => c.Count)
-            .ToList();
-
-        var totals = new List<StatsTotalItem>();
-
-        for (int i = 0; i < count; i++)
-        {
-            var item = new StatsTotalItem
-            {
-                Description = _legislators
-                    .FirstOrDefault(l => l.Id == bills[i].SponsorId).Name,
-                Value = bills[i].Count
-            };
-            totals.Add(item);
-        }
         return totals;
     }
 
-    public List<StatsTotalItem> TopNSubjects(int count)
-    {
-        var totals = new List<StatsTotalItem>();
+    //public List<StatsTotalItem> TopNLegislators(int count)
+    //{
+    //    count = count == 0 ? _legislators.Count() : count;
 
-        foreach(var b in _bills)
-        {
-            foreach(var s in b.Subjects)
-            {
-                var total = totals.FirstOrDefault(v => v.Description == s.Value);
-                if (total == null)
-                {
-                    total = new StatsTotalItem
-                    {
-                        Description = s.Value,
-                        Value = 1
-                    };
-                    totals.Add(total);
-                }
-                else
-                {
-                    total.Value++;
-                }
-            }
-        }
-        count = count == 0 ? totals.Count() : count;
-        var retVal = totals
-            .OrderByDescending(t => t.Value)
-            .Take(count)
-            .ToList();
-        return retVal;
-    }
+    //    var bills = _bills.GroupBy(b => b.SponsorId)
+    //        .Select(x => new
+    //        {
+    //            SponsorId = x.Key,
+    //            Count = x.Count()
+    //        }).OrderByDescending(c => c.Count)
+    //        .ToList();
+
+    //    var totals = new List<StatsTotalItem>();
+
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        var item = new StatsTotalItem
+    //        {
+    //            Description = _legislators
+    //                .FirstOrDefault(l => l.Id == bills[i].SponsorId).Name,
+    //            Value = bills[i].Count
+    //        };
+    //        totals.Add(item);
+    //    }
+    //    return totals;
+    //}
+
+    //public List<StatsTotalItem> TopNSubjects(int count)
+    //{
+    //    var totals = new List<StatsTotalItem>();
+
+    //    foreach(var b in _bills)
+    //    {
+    //        foreach(var s in b.Subjects)
+    //        {
+    //            var total = totals.FirstOrDefault(v => v.Description == s.Value);
+    //            if (total == null)
+    //            {
+    //                total = new StatsTotalItem
+    //                {
+    //                    Description = s.Value,
+    //                    Value = 1
+    //                };
+    //                totals.Add(total);
+    //            }
+    //            else
+    //            {
+    //                total.Value++;
+    //            }
+    //        }
+    //    }
+    //    count = count == 0 ? totals.Count() : count;
+    //    var retVal = totals
+    //        .OrderByDescending(t => t.Value)
+    //        .Take(count)
+    //        .ToList();
+    //    return retVal;
+    //}
 }
