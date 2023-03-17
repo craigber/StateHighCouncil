@@ -1,4 +1,4 @@
-https://www.sltrib.com/news/2023/03/11/andy-larsen-wrapping-up-2023-utah/
+- https://www.sltrib.com/news/2023/03/11/andy-larsen-wrapping-up-2023-utah/
 
 - Make legislator roster be "by session"
 - Provide a way for a new session roster to pull info from prior sessions.

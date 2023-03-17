@@ -19,8 +19,30 @@ namespace StateHighCouncil.Web.Controllers
         public JsonResult BillCountsByParty()
         {
             var counts = _statsService.BillCountsByParty();
-            var retVal = JsonSerializer.Serialize(counts).ToString();
+            
+            return Json(counts);
+        }
 
+        [HttpGet]
+        public JsonResult TopNLegislators(int count)
+        {
+            if (count < 0) { return null; }
+            var counts = _statsService.TopNLegislators(count);
+            return Json(counts);
+        }
+        
+        [HttpGet]
+        public JsonResult TopNSubjects(int count)
+        {
+            if (count < 0) return null;
+            var counts = _statsService.TopNSubjects(count);
+            return Json(counts);
+        }
+
+        [HttpGet]
+        public JsonResult LegislatorsByParty()
+        {
+            var counts = _statsService.LegislatorsByParty();
             return Json(counts);
         }
     }

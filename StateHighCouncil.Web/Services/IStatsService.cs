@@ -5,7 +5,9 @@ namespace StateHighCouncil.Web.Services
     public interface IStatsService
     {
         public TotalsByParty BillCountsByParty();
-        //public List<StatsTotalItem> TopNLegislators(int count);
-        //public List<StatsTotalItem> TopNSubjects(int count);
+        public List<StatsItem> TopNLegislators(int count);
+        public List<StatsItem> TopNSubjects(int count);
+
+        public List<StatsItem> LegislatorsByParty();
     }
 }

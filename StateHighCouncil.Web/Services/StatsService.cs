@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using StateHighCouncil.Web.Data;
 using StateHighCouncil.Web.Models;
 using StateHighCouncil.Web.Models.Stats;
+using System.Collections.Generic;
 
 namespace StateHighCouncil.Web.Services;
 
@@ -63,62 +64,74 @@ public class StatsService : IStatsService
         return totals;
     }
 
-    //public List<StatsTotalItem> TopNLegislators(int count)
-    //{
-    //    count = count == 0 ? _legislators.Count() : count;
+    public List<StatsItem> TopNLegislators(int count)
+    {
+        count = count == 0 ? _legislators.Count() : count;
 
-    //    var bills = _bills.GroupBy(b => b.SponsorId)
-    //        .Select(x => new
-    //        {
-    //            SponsorId = x.Key,
-    //            Count = x.Count()
-    //        }).OrderByDescending(c => c.Count)
-    //        .ToList();
+        var bills = _bills
+            .GroupBy(b => b.SponsorId)
+            .Select(x => new
+            {
+                SponsorId = x.Key,
+                Count = x.Count()
+            }).OrderByDescending(c => c.Count)
+            .ToList();
 
-    //    var totals = new List<StatsTotalItem>();
+        var totals = new List<StatsItem>();
 
-    //    for (int i = 0; i < count; i++)
-    //    {
-    //        var item = new StatsTotalItem
-    //        {
-    //            Description = _legislators
-    //                .FirstOrDefault(l => l.Id == bills[i].SponsorId).Name,
-    //            Value = bills[i].Count
-    //        };
-    //        totals.Add(item);
-    //    }
-    //    return totals;
-    //}
+        for (int i = 0; i < count; i++)
+        {
+            var currentLeg = _legislators.FirstOrDefault(l => l.Id == bills[i].SponsorId);
+            var item = new StatsItem
+            {
 
-    //public List<StatsTotalItem> TopNSubjects(int count)
-    //{
-    //    var totals = new List<StatsTotalItem>();
+                Description = currentLeg.Name + " (" + currentLeg.Party + ")",
+                Party = currentLeg.Party,
+                Value = bills[i].Count                
+            };
+            totals.Add(item);
+        }
+        return totals;
+    }
 
-    //    foreach(var b in _bills)
-    //    {
-    //        foreach(var s in b.Subjects)
-    //        {
-    //            var total = totals.FirstOrDefault(v => v.Description == s.Value);
-    //            if (total == null)
-    //            {
-    //                total = new StatsTotalItem
-    //                {
-    //                    Description = s.Value,
-    //                    Value = 1
-    //                };
-    //                totals.Add(total);
-    //            }
-    //            else
-    //            {
-    //                total.Value++;
-    //            }
-    //        }
-    //    }
-    //    count = count == 0 ? totals.Count() : count;
-    //    var retVal = totals
-    //        .OrderByDescending(t => t.Value)
-    //        .Take(count)
-    //        .ToList();
-    //    return retVal;
-    //}
+public List<StatsItem> TopNSubjects(int count)
+    { 
+        if (count < 0) throw new ArgumentOutOfRangeException("count");
+        
+        var totals = new List<StatsItem>();
+
+        var subjects = _context.Subjects
+            .Where(s => s.SessionStateId == _selectedSession.StateId)
+            .GroupBy(s => s.Value)
+            .Select(x => new StatsItem
+            {
+                Description = x.Key,
+                Value = x.Count()
+            }).OrderByDescending(o => o.Value)
+            .ToList();
+
+        if (count > 0 && count < subjects.Count())
+        {
+            subjects = subjects.Take(count).ToList();
+        }
+        return subjects;
+    }
+
+    public List<StatsItem> LegislatorsByParty()
+    {
+        var legs = _legislators
+            .GroupBy(g => new { g.Party, g.House })
+            .Select(x => new StatsItem
+            {
+                Description = x.Key.House,
+                Party = x.Key.Party,
+                Value = x.Count()
+            })
+            .OrderBy(o => o.Party)
+            .ThenBy(o => o.Description)
+            .ToList();
+
+        return legs;
+    }
 }
+

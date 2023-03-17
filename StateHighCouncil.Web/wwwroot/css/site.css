@@ -20,3 +20,15 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.dashboard-canvas {
+    background-color: lightsteelblue;
+    margin-top: 3px;
+    padding: 5px 5px 5px 20px;
+}
+
+.dashboard-card {
+    margin: 5px 5px 2px 5px;
+    background-color: white;
+    padding: 2px 2px 2px 2px;
+}
