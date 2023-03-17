@@ -10,12 +10,23 @@ namespace StateHighCouncil.Web.Controllers
     {
         private readonly DataContext _context;
         private readonly IStatsService _statsService;
-        public StatsController(DataContext context, IStatsService statsService)
+        private readonly IAlertService _alertService;
+
+        public StatsController(DataContext context,
+            IStatsService statsService,
+            IAlertService alertService)
         {
             _context = context;
             _statsService = statsService;
+            _alertService = alertService;
         }
 
+        public IActionResult Index()
+        {
+            ViewData["SessionMessage"] = _alertService.GetSessionMessage();
+
+            return View();
+        }
         public JsonResult BillCountsByParty()
         {
             var counts = _statsService.BillCountsByParty();

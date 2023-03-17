@@ -1,0 +1,50 @@
+﻿@model StateHighCouncil.Web.Models.DashboardViewModel
+
+<link href="~/lib/apexcharts/apexcharts.css" rel="stylesheet" />
+
+@{
+    ViewData["Title"] = "Stats - State High Council";
+}
+
+<div>
+    <div class="dashboard-canvas">
+        <div class="row">
+            <div class="col-md-6">                    
+                <div class="dashboard-card">
+                    <div id="billsByParty"></div>
+                </div>                   
+
+            </div>            
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div id="top10Legislators"></div>
+                </div>
+            </div>           
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div id="top10Subjects"></div>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <div id="legislatorsGender"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/dashboard.js"></script>
+<script src="~/lib/apexcharts/apexcharts.js"></script>
+<script>
+    window.addEventListener("load", () => {
+        billCountsByParty();
+        topNLegislators(10);
+        topNSubjects(10);
+        legislatorsByParty();
+    });
+</script>
+
