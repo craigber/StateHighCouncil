@@ -4,515 +4,176 @@
     ViewData["Title"] = "Bills";
 }
 
-
 <h1>Bills</h1>
-<!-- Tabs navs -->
-<nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="tracked-tab" data-bs-toggle="tab" data-bs-target="#ex1-tabs-1" type="button" role="tab">Tracked</button>
-        <button class="nav-link" id="updated-tab" data-bs-toggle="tab" data-bs-target="#ex1-tabs-2" type="button" role="tab">Updated</button>
-        <button class="nav-link" id="new-tab" data-bs-toggle="tab" data-bs-target="#ex1-tabs-3" type="button" role="tab">New</button>
-        <button class="nav-link" id="other-tab" data-bs-toggle="tab" data-bs-target="#ex1-tabs-4" type="button" role="tab">Other</button>
+
+<div class="row bg-secondary">
+    <div class="col-1 bg-info text-center">
+        <span class="text-white fw-bold">@Model.Count()</span>
     </div>
-</nav>
-
-<!-- Tabs Content -->
-
-<div class="tab-content" id="nav-tabcontent">
-    <div class="tab-pane active" id="ex1-tabs-1" role="tabpanel">
-        <div class="mt-4">
-            @if(!Model.Any(i => i.IsTracked))
-            {
-                <h5>No bills are being tracked</h5>
-            }
-            @foreach (var item in Model)
-            {
-                @if (item.IsTracked)
-                {
-                    <div class="row justify-content-start mb-4 py-3 bg-light">
-                        <div class="col-2">
-                            <div class="row">
-                                <span class="h2">@item.Version</span>
-                            </div>
-                            <div>
-                                @if (item.WhenPassed > new DateTime(1, 1, 1))
-                                {
-                                    <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
-                                }
-                            </div>
-
-                            <div class="row">
-                                @if (item.IsTracked)
-                                {
-                                    <span><span class="badge bg-primary" id=@("badge"+item.Id) type="button" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+item.Id)></i> Tracking</span> | Clear</span>
-                                }
-                                @if (!item.IsTracked)
-                                {
-                                    <span><button id=@("badge"+item.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+item.Id)></i> Tracking</button> | Clear</span>
-                                }
-                            </div>
-                            <div>
-                                @if(item.Status == "Updated")
-                                {
-                                    <span class="badge bg-warning mt=12"><i class="fa-regular fa-circle-exclamation"></i> Updated</span>
-                                }
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="row">
-                                <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
-                            </div>
-                            <div class="row">
-                                <span>@item.GeneralProvisions</span>
-                            </div>
-                            <div class="row">
-                                <span class="text-black-50">@item.Subjects</span>
-                            </div>
-                            <hr />
-                            <div class="row">
-                                <span>@item.LastAction | @item.LastActionOwner</span>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="row">
-                                <div class="row">
-                                    <span><b>Sponsor -</b> <a href="/House/Details/@item.SponsorId" target="_blank" rel="noopener noreferrer">@item.SponsorName</a>
-                                        @if (item.SponsorParty == "R")
-                                        {
-                                            <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                        }
-                                        @if (item.SponsorParty == "D")
-                                        {
-                                            <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                        }
-                                        @if (item.SponsorReligion == "LDS")
-                                        {
-                                            <img src="images\lds.png" style="width:20px;height:20px" />
-                                        }
-                                    </span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-3">
-                                        <img src="@item.SponsorImageUrl" style="width:75px;height:90px" />
-                                    </div>
-                                    <div class="col-9">
-                                        <div class="row">
-                                            (@item.SponsorDistrict) @item.SponsorCounties
-                                        </div>
-                                        <div class="row">
-                                            @item.SponsorProfession
-                                        </div>                                        
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if (item.FloorSponsorId > 0)
-                            {
-                                <div class="row">
-                                    <div class="row">
-                                        <span><b>Floor Sponsor -</b> <a href="/House/Details/@item.FloorSponsorId" target="_blank" rel="noopener noreferrer">@item.FloorSponsorName</a>
-                                            @if (item.FloorSponsorParty == "R")
-                                            {
-                                                <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                            }
-                                            @if (item.FloorSponsorParty == "D")
-                                            {
-                                                <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                            }
-                                            @if (item.FloorSponsorReligion == "LDS")
-                                            {
-                                                <img src="images\lds.png" style="width:20px;height:20px" />
-                                            }
-                                        </span>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <img src="@item.FloorSponsorImageUrl" style="width:75px;height:90px" />
-                                        </div>
-                                        <div class="col-9">
-                                            <div class="row">
-                                                (@item.FloorSponsorDistrict) @item.FloorSponsorCounties
-                                            </div>
-                                            <div class="row">
-                                                @item.FloorSponsorProfession
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-            }
-        </div>
+    <div class="col-2">
+        <span class="fw-bold text-white">Status: </span>
+        <select name="statusSelector" id="statusSelector">
+            <option value="Tracked">Tracked</option>
+            <option value="New" selected="selected">New</option>
+            <option value="Updated">Updated</option>
+            <option value="All">All</option>
+        </select>
     </div>
-
-     <div class="tab-pane" id="ex1-tabs-2" role="tabpanel">
-        <div class="mt-4">
-            @if(!Model.Any(i => i.Status == "Updated"))
-            {
-                <h5>There are no updated bills at this time</h5>
-            }
-            @foreach (var item in Model)
-            {
-                @if (item.Status == "Updated")
-                {
-                    <div class="row justify-content-start mb-4 py-3 bg-light">
-                        <div class="col-2">
-                            <div class="row">
-                                <span class="h2">@item.Version</span>
-                            </div>
-                            <div class="row px-1">
-                                @if(item.WhenPassed > new DateTime(1, 1, 1))
-                                {
-                                    <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
-                                }
-                            </div>
-                            <div class="row">
-                                @if (item.IsTracked)
-                                {
-                                    <span><span class="badge bg-primary" id=@("badge"+item.Id) type="button" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+item.Id)></i> Tracking</span> | Clear</span>
-                                }
-                                @if (!item.IsTracked)
-                                {
-                                    <span><button id=@("badge"+item.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+item.Id)></i> Tracking</button> | Clear</span>
-                                }
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="row">
-                                <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
-                            </div>
-                            <div class="row">
-                                <span>@item.GeneralProvisions</span>
-                            </div>
-                            <div class="row">
-                                <span class="text-black-50">@item.Subjects</span>
-                            </div>
-                            <hr />
-                            <div class="row">
-                                <span>@item.LastAction | @item.LastActionOwner</span>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="row">
-                                <div class="row">
-                                    <span><b>Sponsor -</b> <a href="/House/Details/@item.SponsorId" target="_blank" rel="noopener noreferrer">@item.SponsorName</a>
-                                    
-                                        @if (item.SponsorParty == "R")
-                                        {
-                                            <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                        }
-                                        @if (item.SponsorParty == "D")
-                                        {
-                                            <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                        }
-                                        @if (item.SponsorReligion == "LDS")
-                                        {
-                                            <img src="images\lds.png" style="width:20px;height:20px" />
-                                        }
-                                    </span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-3">
-                                        <img src="@item.SponsorImageUrl" style="width:75px;height:90px" />
-                                    </div>
-                                    <div class="col-9">
-                                        <div class="row">
-                                            (@item.SponsorDistrict) @item.SponsorCounties
-                                        </div>
-                                        <div class="row">
-                                            @item.SponsorProfession
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if (item.FloorSponsorId > 0)
-                            {
-                                <div class="row">
-                                    <div class="row">
-                                        <span><b>Floor Sponsor -</b> <a href="/House/Details/@item.FloorSponsorId" target="_blank" rel="noopener noreferrer">@item.FloorSponsorName</a>
-                                            @if (item.FloorSponsorParty == "R")
-                                            {
-                                                <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                            }
-                                            @if (item.FloorSponsorParty == "D")
-                                            {
-                                                <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                            }
-                                            @if (item.FloorSponsorReligion == "LDS")
-                                            {
-                                                <img src="images\lds.png" style="width:20px;height:20px" />
-                                            }
-                                        </span>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <img src="@item.FloorSponsorImageUrl" style="width:75px;height:90px" />
-                                        </div>
-                                        <div class="col-9">
-                                            <div class="row">
-                                                (@item.FloorSponsorDistrict) @item.FloorSponsorCounties
-                                            </div>
-                                            <div class="row">
-                                                @item.FloorSponsorProfession
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-            }
-        </div>
+    <div class="col-8">
+        <span class="fw-bold text-white">Subject: </span>
+        <select name="subjectSelector" id="subjectSelector">
+        </select>
     </div>
-
-    <div class="tab-pane" id="ex1-tabs-3" role="tabpanel">
-        <div class="mt-4">
-            @if(!Model.Any(i => i.Status =="New"))
-            {
-                <h5>There are no new bills at this time</h5>
-            }
-            @foreach (var item in Model)
-            {
-                @if (item.Status == "New")
-                {
-                    <div class="row justify-content-start mb-4 py-3 bg-light">
-                        <div class="col-2">
-                            <div class="row">
-                                <span class="h2">@item.Version</span>
-                            </div>
-                            <div class="row">
-                                @if (item.WhenPassed > new DateTime(1, 1, 1))
-                                {
-                                    <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
-                                }
-                            </div>
-                            <div class="row">
-                                @if (item.IsTracked)
-                                {
-                                    <span><span class="badge bg-primary" id=@("badge"+item.Id) type = "button" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+item.Id)></i> Tracking</span> | Clear</span>
-                                }
-                                @if (!item.IsTracked)
-                                {
-                                    <span><button id=@("badge"+item.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+item.Id)></i> Tracking</button> | Clear</span>
-                                }
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="row">
-                                <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
-                            </div>
-                            <div class="row">
-                                <span>@item.GeneralProvisions</span>
-                            </div>
-                            <div class="row">
-                                <span class="text-black-50">@item.Subjects</span>
-                            </div>
-                            <hr />
-                            <div class="row">
-                                <span>@item.LastAction | @item.LastActionOwner</span>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="row">
-                                <div class="row">
-                                    <span><b>Sponsor -</b> <a href="/House/Details/@item.SponsorId" target="_blank" rel="noopener noreferrer">@item.SponsorName</a>
-                                        @if (item.SponsorParty == "R")
-                                        {
-                                            <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                        }
-                                        @if (item.SponsorParty == "D")
-                                        {
-                                            <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                        }
-                                        @if (item.SponsorReligion == "LDS")
-                                        {
-                                            <img src="images\lds.png" style="width:20px;height:20px" />
-                                        }
-                                    </span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-3">
-                                        <img src="@item.SponsorImageUrl" style="width:75px;height:90px" />
-                                    </div>
-                                    <div class="col-9">
-                                        <div class="row">
-                                            (@item.SponsorDistrict) @item.SponsorCounties
-                                        </div>
-                                        <div class="row">
-                                            @item.SponsorProfession
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                  
-                            @if (item.FloorSponsorId > 0)
-                            {
-                                <div class="row">
-                                    <div class="row">
-                                        <span><b>Floor Sponsor -</b> <a href="/House/Details/@item.FloorSponsorId" target="_blank" rel="noopener noreferrer">@item.FloorSponsorName</a>
-                                            @if (item.FloorSponsorParty == "R")
-                                            {
-                                                <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                            }
-                                            @if (item.FloorSponsorParty == "D")
-                                            {
-                                                <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                            }
-                                            @if (item.FloorSponsorReligion == "LDS")
-                                            {
-                                                <img src="images\lds.png" style="width:20px;height:20px" />
-                                            }
-                                        </span>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <img src="@item.FloorSponsorImageUrl" style="width:75px;height:90px" />
-                                        </div>
-                                        <div class="col-9">
-                                            <div class="row">
-                                                (@item.FloorSponsorDistrict) @item.FloorSponsorCounties
-                                            </div>
-                                            <div class="row">
-                                                @item.FloorSponsorProfession
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-
-    <div class="tab-pane" id="ex1-tabs-4" role="tabpanel">
-        <div class="mt-4">
-            @if(!Model.Any(i => string.IsNullOrEmpty(i.Status)))
-            {
-                <h5>There are no bills with no status at this time</h5>
-            }
-            @foreach (var item in Model)
-            {
-                @if (string.IsNullOrEmpty(item.Status))
-                {
-                    <div class="row justify-content-start mb-4 py-3 bg-light">
-                        <div class="col-2">
-                            <div class="row">
-                                <span class="h2">@item.Version</span>
-                            </div>
-                            <div class="row">
-                                @if (item.WhenPassed > new DateTime(1, 1, 1))
-                                {
-                                    <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
-                                }
-                            </div>
-                            <div class="row">
-                                @if (item.IsTracked)
-                                {
-                                    <span><span class="badge bg-primary" id=@("badge"+item.Id) type="button" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+item.Id)></i> Tracking</span> | Clear</span>
-                                }
-                                @if (!item.IsTracked)
-                                {
-                                    <span><button id=@("badge"+item.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+item.Id)></i> Tracking</button> | Clear</span>
-                                }
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="row">
-                                <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
-                            </div>
-                            <div class="row">
-                                <span>@item.GeneralProvisions</span>
-                            </div>
-                            <div class="row">
-                                <span class="text-black-50">@item.Subjects</span>
-                            </div>
-                            <hr />
-                            <div class="row">
-                                <span>@item.LastAction | @item.LastActionOwner</span>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="row">
-                                <div class="row">
-                                    <span>
-                                        <b>Sponsor -</b> <a href="/House/Details/@item.SponsorId" target="_blank" rel="noopener noreferrer">@item.SponsorName</a>
-                                        @if (item.SponsorParty == "R")
-                                        {
-                                            <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                        }
-                                        @if (item.SponsorParty == "D")
-                                        {
-                                            <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                        }
-                                        @if (item.SponsorReligion == "LDS")
-                                        {
-                                            <img src="images\lds.png" style="width:20px;height:20px" />
-                                        }
-                                    </span>
-                                </div>
-                                <div class="row">
-                                    <div class="col-3">
-                                        <img src="@item.SponsorImageUrl" style="width:75px;height:90px" />
-                                    </div>
-                                    <div class="col-9">
-                                        <div class="row">
-                                            (@item.SponsorDistrict) @item.SponsorCounties
-                                        </div>
-                                        <div class="row">
-                                            @item.SponsorProfession
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if (item.FloorSponsorId > 0)
-                                @if (item.FloorSponsorId > 0)
-                                {
-                                    <div class="row">
-                                        <div class="row">
-                                            <span>
-                                                <b>Floor Sponsor -</b> <a href="/House/Details/@item.FloorSponsorId" target="_blank" rel="noopener noreferrer">@item.FloorSponsorName</a>
-                                                @if (item.FloorSponsorParty == "R")
-                                                {
-                                                    <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                                }
-                                                @if (item.FloorSponsorParty == "D")
-                                                {
-                                                    <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                                }
-                                                @if (item.FloorSponsorReligion == "LDS")
-                                                {
-                                                    <img src="images\lds.png" style="width:20px;height:20px" />
-                                                }
-                                            </span>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-3">
-                                                <img src="@item.FloorSponsorImageUrl" style="width:75px;height:90px" />
-                                            </div>
-                                            <div class="col-9">
-                                                <div class="row">
-                                                    (@item.FloorSponsorDistrict) @item.FloorSponsorCounties
-                                                </div>
-                                                <div class="row">
-                                                    @item.FloorSponsorProfession
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                        </div>
-                    </div>
-                }
-            }
-        </div>
+    <div class="col-1">
+        <span class="badge bg-light text-black"><i class="fa-solid fa-circle-xmark"></i> Clear All</span>
     </div>
 </div>
 
+<div>
+    <div class="mt-4">
+        @if(!Model.Any(i => i.Status =="New"))
+        {
+            <h5>There are no new bills at this time</h5>
+        }
+        @foreach (var item in Model)
+        {
+            <div id=@("div-"+item.Id) class="row justify-content-start mb-4 py-3 bg-light">
+                <div class="col-2">
+                    <div class="row">
+                        <span class="h2">@item.Version</span>
+                    </div>
+                    <div class="row">
+                        @if (item.WhenPassed > new DateTime(1, 1, 1))
+                        {
+                            <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            @if (item.IsTracked)
+                            {
+                                <button class="badge bg-primary" id=@("badge"+item.Id) type = "button" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+item.Id)></i> Tracking</button>                              
+                            }
+                            @if (!item.IsTracked)
+                            {
+                                <button id=@("badge"+item.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+item.Id)></i> Tracking</button>
+                            }
+                        </div>
+                        <div class="col-6">
+                            @if (item.Status == "New")
+                            {
+                                <button id=@("badge"+item.Id) type="button" class="badge bg-danger" onclick="clearStatus(@item.Id);"><i class="fa-regular fa-file-circle-plus" id=@("icon"+item.Id)></i> New!</button>
+                            }
+                            @if (item.Status == "Updated")
+                            {
+                                <button id=@("badge"+item.Id) type="button" class="badge bg-warning" onclick="clearStatus(@item.Id);"><i class="fa-regular fa-file-pen" id=@("icon"+item.Id)></i> Updated</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row">
+                        <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
+                    </div>
+                    <div class="row">
+                        <span>@item.GeneralProvisions</span>
+                    </div>
+                    <div class="row">
+                        <span class="text-black-50">@item.Subjects</span>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <span>@item.LastAction | @item.LastActionOwner</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row">
+                        <div class="row">
+                            <span><b>Sponsor -</b> <a href="/House/Details/@item.SponsorId" target="_blank" rel="noopener noreferrer">@item.SponsorName</a>
+                                @if (item.SponsorParty == "R")
+                                {
+                                    <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
+                                }
+                                @if (item.SponsorParty == "D")
+                                {
+                                    <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
+                                }
+                                @if (item.SponsorReligion == "LDS")
+                                {
+                                    <img src="images\lds.png" style="width:20px;height:20px" />
+                                }
+                            </span>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <img src="@item.SponsorImageUrl" style="width:75px;height:90px" />
+                            </div>
+                            <div class="col-9">
+                                <div class="row">
+                                    (@item.SponsorDistrict) @item.SponsorCounties
+                                </div>
+                                <div class="row">
+                                    @item.SponsorProfession
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  
+                    @if (item.FloorSponsorId > 0)
+                    {
+                        <div class="row">
+                            <div class="row">
+                                <span><b>Floor Sponsor -</b> <a href="/House/Details/@item.FloorSponsorId" target="_blank" rel="noopener noreferrer">@item.FloorSponsorName</a>
+                                    @if (item.FloorSponsorParty == "R")
+                                    {
+                                        <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
+                                    }
+                                    @if (item.FloorSponsorParty == "D")
+                                    {
+                                        <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
+                                    }
+                                    @if (item.FloorSponsorReligion == "LDS")
+                                    {
+                                        <img src="images\lds.png" style="width:20px;height:20px" />
+                                    }
+                                </span>
+                            </div>
+                            <div class="row">
+                                <div class="col-3">
+                                    <img src="@item.FloorSponsorImageUrl" style="width:75px;height:90px" />
+                                </div>
+                                <div class="col-9">
+                                    <div class="row">
+                                        (@item.FloorSponsorDistrict) @item.FloorSponsorCounties
+                                    </div>
+                                    <div class="row">
+                                        @item.FloorSponsorProfession
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    window.addEventListener("load", () => {
+        loadSubjects();
+
+        const statusValue = '@ViewBag.StatusValue';
+        const statusSelector = document.getElementById('statusSelector');
+        const statusOptions = Array.from(statusSelector.option);
+        const statusOption = options.find(item => it.text == statusValue);
+        statusOption.selected = true;
+
+
+
+        const subjectValue = '@ViewBag.SubjectValue';
+    });
+</script>
+
+    
                                                

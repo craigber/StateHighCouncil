@@ -28,6 +28,50 @@ function ToggleTracking(billId) {
     })();
 }
 
+function loadSubjects() {
+    (async () => {
+        var selectSubject = '@ViewBag.SubjectValue';
+        const response = await fetch('/Api/Subjects');
+        const data = await response.json();
+        const statusValue = '@ViewBag.StatusValue';
+
+        var selector = document.getElementById("subjectSelector");
+        selector.options.length = 0;
+
+        var option = document.createElement("option");
+        option.text = "All";
+        selector.add(option);
+
+        for (var i = 0; i < data.length; i++) {
+            option = document.createElement("option");
+            option.text = data[i].name;
+            if (data[i].name == statusValue) {
+                option.selected = true;
+            }
+            selector.add(option);
+        }
+    })()
+}
+
+function clearStatus(billId) {
+    (async () => {
+        const response = await fetch('/Api/ClearStatus?billId='+billId);
+        const data = await response.json();
+        
+        if (data) {
+            const shouldRemoveDiv = '@ViewBag.ShouldRemoveDiv'
+            
+            if (shouldRemoveDiv) {
+                element = document.getElementById("div-" + billId);
+            }
+            else {
+                element = document.getElementById('badge' + item.Id);
+            }
+            element.remove();
+        }
+    })()
+}
+
 function loadSessions() {
     var select = document.getElementById("sessionSelector");
     var option = document.createElement('option');

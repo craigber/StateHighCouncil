@@ -19,17 +19,26 @@ public class BillService : IBillService
         _selectedSession = _context.Sessions.Where(s => s.IsSelected).FirstOrDefault();
     }
 
-    public IEnumerable<BillViewModel> GetBills(string subject)
+    public IEnumerable<BillViewModel> GetBills(string subject, string status)
     {
-        var bills = _context.Bills?
-            .Where(b => b.Session == _selectedSession.StateId)
-            .OrderBy(o => o.Version).ToList();
-        
-        if(bills == null || !bills.Any())
+        List<Bill> bills;
+
+        if (string.IsNullOrEmpty(status) || status == "All")
         {
-            return null;
+            bills = _context.Bills?
+                .Where(b => b.Session == _selectedSession.StateId)
+                .OrderBy(o => o.Version)
+                .ToList();
         }
-        
+        else
+        {
+            bills = _context.Bills?
+                .Where(b => b.Session == _selectedSession.StateId
+                    && b.Status == status)
+                .OrderBy(o => o.Version)
+                .ToList();
+        }
+ 
         var legislators = _context.Legislators.ToList();
         var viewModel = new List<BillViewModel>();
 

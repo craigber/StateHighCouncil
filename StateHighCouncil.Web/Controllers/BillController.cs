@@ -27,15 +27,26 @@ namespace StateHighCouncil.Web.Controllers
             _service = billService;
         }
 
-        public async Task<IActionResult> Index(string? subject)
-        {   
-            ViewData["SessionMessage"] = _alertService.GetSessionMessage();
+        public async Task<IActionResult> Index(string? subject, string status)
+        {
+            status = "New";
 
-            var viewModel = _service.GetBills(subject);
-            if(viewModel == null || !viewModel.Any())
+            var viewModel = _service.GetBills(subject, status);
+
+            if (string.IsNullOrWhiteSpace(status))
             {
-                return NotFound();
+                status = "All";
             }
+
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                subject = "All";
+            }
+
+            ViewData["SessionMessage"] = _alertService.GetSessionMessage();
+            ViewData["StatusValue"] = status;
+            ViewData["SubjectValue"] = subject;
+            ViewData["ShouldRemoveDiv"] = (status == "New" && status == "Updated");
 
             return View(viewModel);
         }

@@ -1,28 +1,45 @@
 - https://www.sltrib.com/news/2023/03/11/andy-larsen-wrapping-up-2023-utah/
 
-- Make legislator roster be "by session"
-- Provide a way for a new session roster to pull info from prior sessions.
-    - Religion, gender, industry, etc
-- Componentize Bills page
+
 - Componentize House page
 - Add Senate page
-- Fix Bill pages so Senatators link to Senate page
 - Add subjects to Legislator Bill page
-- Enable Clear status
 - Edit page for legislators
-- Flag new legislators that don't match with previous
-- Graphs
+- Make legislator roster be "by session"
+- Enable Clear Status on Legislator page
+===============
+- Componentize Bills page
+- Fix Bill pages so Senatators link to Senate page
+- Enable Clear status
+- Filter Bills by status
 - Filter bills by subject
-- Make the "Other" bill page be "All"
-- Refactor Data folder
-    - Add Repository
-- Dashboard for home page
+===============
+- Session management screen
+- 
+===============
+- Tracked bills for home page
+===============
+- Graphs
+    - Line: Filed vs Passed counts by day
+===============
 - Cleanup usings
-- Refactor Controllers to use Repository
-- Filter Bills
-    - by Status
-    - by Subject
-- Select data using Selected Session
-- Dynamically load Session Selector
-- Cache data
 - Clean up compiler warnings
+- Add logging
+- Move ApiController logic to service
+===============
+- Select data using Selected Session
+- Refactor Controllers to use Repository
+- Refactor Data folder
+- Dynamically load Session Selector
+===============
+- Initialize legislators to Male
+- Verify data update is loading/working correctly
+- Days between filed and passed (or failed by vote)
+- Add actions for bills
+- Look into storing Filed Date for bills
+- Provide a way for a new session roster to pull info from prior sessions.
+    - Religion, gender, industry, etc
+- Flag new legislators that don't match with previous
+- Cache data
+===============
+- Load prior sessions

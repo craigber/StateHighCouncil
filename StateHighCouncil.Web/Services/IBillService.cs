@@ -4,6 +4,6 @@ namespace StateHighCouncil.Web.Services
 {
     public interface IBillService
     {
-        public IEnumerable<BillViewModel> GetBills(string subject);
+        public IEnumerable<BillViewModel> GetBills(string subject, string status);
     }
 }
