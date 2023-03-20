@@ -1,9 +1,4 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-
-function ToggleTracking(billId) {
+﻿function ToggleTracking(billId) {
     (async () => {
         const response = await fetch('/Api/ToggleBillTracking/?billid=' + billId);
         
@@ -26,6 +21,26 @@ function ToggleTracking(billId) {
             document.getElementById(icon).classList.add("fa-circle-plus");
         }
     })();
+}
+
+function setStatusFilter() {
+    var select = document.getElementById("statusSelector");
+    var value = select.value;
+    alert("Setting cookie value: " + value);
+    setCookie("statusFilter", value, 1);
+    location.reload(true);
+}
+
+function setCurrentStatus() {
+    const cookieValue = getCookie("statusFilter");
+    alert("Setting status: " + cookieValue);
+    const select = document.getElementById("statusSelector");
+    select[select.selectedIndex].removeAttr("selected");
+    for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i] == cookieValue) {
+            select.selectedIndex = i;            
+        }
+    }
 }
 
 function loadSubjects() {

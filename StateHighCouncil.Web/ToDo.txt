@@ -1,21 +1,20 @@
 - https://www.sltrib.com/news/2023/03/11/andy-larsen-wrapping-up-2023-utah/
 
 
-- Componentize House page
+- Componentize House page - partial View? 
 - Add Senate page
 - Add subjects to Legislator Bill page
 - Edit page for legislators
 - Make legislator roster be "by session"
 - Enable Clear Status on Legislator page
 ===============
-- Componentize Bills page
-- Fix Bill pages so Senatators link to Senate page
+- Componentize Bills page - partial view
+- Fix Bill pages so Senators link to Senate page
 - Enable Clear status
-- Filter Bills by status
-- Filter bills by subject
+- Add Clear status button
+- Clear status removes the bill when Filter is set to Tracking
 ===============
 - Session management screen
-- 
 ===============
 - Tracked bills for home page
 ===============
@@ -25,12 +24,14 @@
 - Cleanup usings
 - Clean up compiler warnings
 - Add logging
+===============
 - Move ApiController logic to service
 ===============
 - Select data using Selected Session
 - Refactor Controllers to use Repository
 - Refactor Data folder
 - Dynamically load Session Selector
+- Code up Session Selector
 ===============
 - Initialize legislators to Male
 - Verify data update is loading/working correctly
@@ -43,3 +44,24 @@
 - Cache data
 ===============
 - Load prior sessions
+
+
+
+
+
+
+
+https://stackoverflow.com/questions/66336768/select-onchange-to-controllers-action-in-net-core#:~:text=If%20you%20want%20to%20use%20the%20%3Cselect%3E%20element,you%20can%20filter%20data%20based%20on%20the%20type.
+
+<h1>ProductIndex</h1>
+ 
+<form asp-action="ProductIndex">
+    <select id="ddltype" name="type" asp-items="ViewBag.Types" onchange="document.getElementById('btnSubmit').click();" >
+        <option value="all">All Type</option>
+    </select>
+    <div id="productcontainer"> 
+        <partial name="_ShowProductPartialView.cshtml" model="@Model" />
+    </div>
+
+    <input id="btnSubmit" hidden type="submit" value="submit" />
+</form>

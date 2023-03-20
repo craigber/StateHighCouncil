@@ -9,46 +9,44 @@ using Microsoft.EntityFrameworkCore;
 using StateHighCouncil.Web.Data;
 using StateHighCouncil.Web.Models;
 using StateHighCouncil.Web.Services;
+using System.Web;
+using System.Security.Claims;
 
-namespace StateHighCouncil.Web.Controllers
+namespace StateHighCouncil.Web.Controllers;
+
+public class BillController : Controller
 {
-    public class BillController : Controller
+    private readonly DataContext _context;
+    private readonly IAlertService _alertService;
+    private readonly IBillService _service;
+
+    public BillController(DataContext context,
+        IAlertService alertService,
+        IBillService billService)
     {
-        private readonly DataContext _context;
-        private readonly IAlertService _alertService;
-        private readonly IBillService _service;
+        _context = context;
+        _alertService = alertService;
+        _service = billService;
+    }
 
-        public BillController(DataContext context,
-            IAlertService alertService,
-            IBillService billService)
-        {
-            _context = context;
-            _alertService = alertService;
-            _service = billService;
-        }
+    public async Task<IActionResult> Index()
+    {
+        var setting = (_context.SystemSettings).FirstOrDefault();
 
-        public async Task<IActionResult> Index(string? subject, string status)
-        {
-            status = "New";
+        var viewModel = await _service.GetBillsAsync(setting.Status, setting.Subject);
 
-            var viewModel = _service.GetBills(subject, status);
+        ViewData["SessionMessage"] = _alertService.GetSessionMessage();
+        
+        return View(viewModel);
+    }
 
-            if (string.IsNullOrWhiteSpace(status))
-            {
-                status = "All";
-            }
-
-            if (string.IsNullOrWhiteSpace(subject))
-            {
-                subject = "All";
-            }
-
-            ViewData["SessionMessage"] = _alertService.GetSessionMessage();
-            ViewData["StatusValue"] = status;
-            ViewData["SubjectValue"] = subject;
-            ViewData["ShouldRemoveDiv"] = (status == "New" && status == "Updated");
-
-            return View(viewModel);
-        }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Index(BillUpdateViewModel update)
+    {
+        var viewModel = await _service.UpdateBillAsync(update);
+        ViewData["SessionMessage"] = _alertService.GetSessionMessage();
+        //return View("Index");
+        return View(viewModel);
     }
 }

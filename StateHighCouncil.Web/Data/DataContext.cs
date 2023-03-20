@@ -16,6 +16,8 @@ public class DataContext : DbContext
     //public DbSet<Agenda> Agendas { get; set; }
     public DbSet<CodeSection> CodeSections { get; set; }
     public DbSet<Subject> Subjects { get; set; }
+    public DbSet<SystemSetting> SystemSettings { get; set; }
+
     //public DbSet<ActionHistory> ActionHistories { get; set; }
 
     public DataContext(DbContextOptions<DataContext> options) : base(options)

@@ -1,4 +1,4 @@
-﻿@model List<StateHighCouncil.Web.Models.BillViewModel>
+﻿@model StateHighCouncil.Web.Models.BillViewModel
 
 @{
     ViewData["Title"] = "Bills";
@@ -6,133 +6,107 @@
 
 <h1>Bills</h1>
 
-<div class="row bg-secondary">
-    <div class="col-1 bg-info text-center">
-        <span class="text-white fw-bold">@Model.Count()</span>
+<form asp-action="Index" id="billForm">
+    <div class="row bg-secondary">
+        <div class="col-1 bg-info text-center">
+            <span class="text-white fw-bold">@(Model.Bills == null || Model.Bills.Count() == 0 ? 0 : Model.Bills.Count())</span>
+        </div>
+        <div class="col-2">
+            <span class="fw-bold text-white">Status: </span>
+            <select asp-for="SelectedStatus" asp-items="Model.Statuses" name="statusSelector" id="statusSelector" onchange="submitForm();">
+            </select>
+            @Html.Hidden("SelectedStatus", null, new { @id = "SelectedStatus" })
+        </div>
+        <div class="col-8">
+            <span class="fw-bold text-white">Subject: </span>
+            <select asp-for="SelectedSubject" asp-items="Model.Subjects" name="subjectSelector" id="subjectSelector" onchange="submitForm();">
+            </select>
+            @Html.Hidden("SelectedSubject", null, new { @id = "SelectedSubject" })
+        </div>
+        <div class="col-1">
+            <span class="badge bg-light text-black"><i class="fa-solid fa-circle-xmark"></i> Clear All</span>
+        </div>
     </div>
-    <div class="col-2">
-        <span class="fw-bold text-white">Status: </span>
-        <select name="statusSelector" id="statusSelector">
-            <option value="Tracked">Tracked</option>
-            <option value="New" selected="selected">New</option>
-            <option value="Updated">Updated</option>
-            <option value="All">All</option>
-        </select>
-    </div>
-    <div class="col-8">
-        <span class="fw-bold text-white">Subject: </span>
-        <select name="subjectSelector" id="subjectSelector">
-        </select>
-    </div>
-    <div class="col-1">
-        <span class="badge bg-light text-black"><i class="fa-solid fa-circle-xmark"></i> Clear All</span>
-    </div>
-</div>
+</form>
 
-<div>
-    <div class="mt-4">
-        @if(!Model.Any(i => i.Status =="New"))
-        {
-            <h5>There are no new bills at this time</h5>
-        }
-        @foreach (var item in Model)
-        {
-            <div id=@("div-"+item.Id) class="row justify-content-start mb-4 py-3 bg-light">
-                <div class="col-2">
-                    <div class="row">
-                        <span class="h2">@item.Version</span>
-                    </div>
-                    <div class="row">
-                        @if (item.WhenPassed > new DateTime(1, 1, 1))
-                        {
-                            <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
-                        }
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            @if (item.IsTracked)
-                            {
-                                <button class="badge bg-primary" id=@("badge"+item.Id) type = "button" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+item.Id)></i> Tracking</button>                              
-                            }
-                            @if (!item.IsTracked)
-                            {
-                                <button id=@("badge"+item.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+item.Id)></i> Tracking</button>
-                            }
-                        </div>
-                        <div class="col-6">
-                            @if (item.Status == "New")
-                            {
-                                <button id=@("badge"+item.Id) type="button" class="badge bg-danger" onclick="clearStatus(@item.Id);"><i class="fa-regular fa-file-circle-plus" id=@("icon"+item.Id)></i> New!</button>
-                            }
-                            @if (item.Status == "Updated")
-                            {
-                                <button id=@("badge"+item.Id) type="button" class="badge bg-warning" onclick="clearStatus(@item.Id);"><i class="fa-regular fa-file-pen" id=@("icon"+item.Id)></i> Updated</button>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="row">
-                        <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
-                    </div>
-                    <div class="row">
-                        <span>@item.GeneralProvisions</span>
-                    </div>
-                    <div class="row">
-                        <span class="text-black-50">@item.Subjects</span>
-                    </div>
-                    <hr />
-                    <div class="row">
-                        <span>@item.LastAction | @item.LastActionOwner</span>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="row">
+@if(Model.Bills == null || Model.Bills.Count() == 0)
+{
+    <div>
+        <h2>No bills found</h2>
+    </div>
+}
+else
+{
+    <div>
+        <div class="mt-4">
+            @if(!Model.Bills.Any(i => i.Status =="New"))
+            {
+                <h5>There are no new bills at this time</h5>
+            }
+            @foreach (var item in Model.Bills)
+            {
+                <div id=@("div-"+item.Id) class="row justify-content-start mb-4 py-3 bg-light">
+                    <div class="col-2">
                         <div class="row">
-                            <span><b>Sponsor -</b> <a href="/House/Details/@item.SponsorId" target="_blank" rel="noopener noreferrer">@item.SponsorName</a>
-                                @if (item.SponsorParty == "R")
-                                {
-                                    <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
-                                }
-                                @if (item.SponsorParty == "D")
-                                {
-                                    <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
-                                }
-                                @if (item.SponsorReligion == "LDS")
-                                {
-                                    <img src="images\lds.png" style="width:20px;height:20px" />
-                                }
-                            </span>
+                            <span class="h2">@item.Version</span>
                         </div>
                         <div class="row">
-                            <div class="col-3">
-                                <img src="@item.SponsorImageUrl" style="width:75px;height:90px" />
+                            @if (item.WhenPassed > new DateTime(1, 1, 1))
+                            {
+                                <span class="badge bg-success"><i class="fa-solid fa-thumbs-up"></i> Passed</span>
+                            }
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                @if (item.IsTracked)
+                                {
+                                    <button class="badge bg-primary" id=@("badge"+item.Id) type = "button" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-check" id=@("icon"+item.Id)></i> Tracking</button>                              
+                                }
+                                @if (!item.IsTracked)
+                                {
+                                    <button id=@("badge"+item.Id) type="button" class="badge bg-secondary" onclick="ToggleTracking(@item.Id);"><i class="fa-regular fa-circle-plus" id=@("icon"+item.Id)></i> Tracking</button>
+                                }
                             </div>
-                            <div class="col-9">
-                                <div class="row">
-                                    (@item.SponsorDistrict) @item.SponsorCounties
-                                </div>
-                                <div class="row">
-                                    @item.SponsorProfession
-                                </div>
+                            <div class="col-6">
+                                @if (item.Status == "New")
+                                {
+                                    <button id=@("badge"+item.Id) type="button" class="badge bg-danger" onclick="clearStatus(@item.Id);"><i class="fa-regular fa-file-circle-plus" id=@("icon"+item.Id)></i> New!</button>
+                                }
+                                @if (item.Status == "Updated")
+                                {
+                                    <button id=@("badge"+item.Id) type="button" class="badge bg-warning" onclick="clearStatus(@item.Id);"><i class="fa-regular fa-file-pen" id=@("icon"+item.Id)></i> Updated</button>
+                                }
                             </div>
                         </div>
                     </div>
-                  
-                    @if (item.FloorSponsorId > 0)
-                    {
+                    <div class="col-6">
+                        <div class="row">
+                            <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
+                        </div>
+                        <div class="row">
+                            <span>@item.GeneralProvisions</span>
+                        </div>
+                        <div class="row">
+                            <span class="text-black-50">@item.Subjects</span>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <span>@item.LastAction | @item.LastActionOwner</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
                         <div class="row">
                             <div class="row">
-                                <span><b>Floor Sponsor -</b> <a href="/House/Details/@item.FloorSponsorId" target="_blank" rel="noopener noreferrer">@item.FloorSponsorName</a>
-                                    @if (item.FloorSponsorParty == "R")
+                                <span><b>Sponsor -</b> <a href="/House/Details/@item.SponsorId" target="_blank" rel="noopener noreferrer">@item.SponsorName</a>
+                                    @if (item.SponsorParty == "R")
                                     {
                                         <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
                                     }
-                                    @if (item.FloorSponsorParty == "D")
+                                    @if (item.SponsorParty == "D")
                                     {
                                         <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
                                     }
-                                    @if (item.FloorSponsorReligion == "LDS")
+                                    @if (item.SponsorReligion == "LDS")
                                     {
                                         <img src="images\lds.png" style="width:20px;height:20px" />
                                     }
@@ -140,39 +114,90 @@
                             </div>
                             <div class="row">
                                 <div class="col-3">
-                                    <img src="@item.FloorSponsorImageUrl" style="width:75px;height:90px" />
+                                    <img src="@item.SponsorImageUrl" style="width:75px;height:90px" />
                                 </div>
                                 <div class="col-9">
                                     <div class="row">
-                                        (@item.FloorSponsorDistrict) @item.FloorSponsorCounties
+                                        (@item.SponsorDistrict) @item.SponsorCounties
                                     </div>
                                     <div class="row">
-                                        @item.FloorSponsorProfession
+                                        @item.SponsorProfession
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    }
+                  
+                        @if (item.FloorSponsorId > 0)
+                        {
+                            <div class="row">
+                                <div class="row">
+                                    <span><b>Floor Sponsor -</b> <a href="/House/Details/@item.FloorSponsorId" target="_blank" rel="noopener noreferrer">@item.FloorSponsorName</a>
+                                        @if (item.FloorSponsorParty == "R")
+                                        {
+                                            <img src="images\republicanlogo.jpg" style="width:15px;height:15px" />
+                                        }
+                                        @if (item.FloorSponsorParty == "D")
+                                        {
+                                            <img src="images\democraticlogo.png" style="width:15px;height:15px" class="mr-3" />
+                                        }
+                                        @if (item.FloorSponsorReligion == "LDS")
+                                        {
+                                            <img src="images\lds.png" style="width:20px;height:20px" />
+                                        }
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <img src="@item.FloorSponsorImageUrl" style="width:75px;height:90px" />
+                                    </div>
+                                    <div class="col-9">
+                                        <div class="row">
+                                            (@item.FloorSponsorDistrict) @item.FloorSponsorCounties
+                                        </div>
+                                        <div class="row">
+                                            @item.FloorSponsorProfession
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
+}
 
 <script>
-    window.addEventListener("load", () => {
-        loadSubjects();
+    //window.addEventListener("load", () => {
+        //setCurrentStatus();
+        //loadSubjects();
 
-        const statusValue = '@ViewBag.StatusValue';
-        const statusSelector = document.getElementById('statusSelector');
-        const statusOptions = Array.from(statusSelector.option);
-        const statusOption = options.find(item => it.text == statusValue);
-        statusOption.selected = true;
+        //const statusValue = '@ViewBag.StatusValue';
+        //const statusSelector = document.getElementById('statusSelector');
+        //const statusOptions = Array.from(statusSelector.option);
+        //const statusOption = options.find(item => it.text == statusValue);
+        //statusOption.selected = true;
 
 
 
-        const subjectValue = '@ViewBag.SubjectValue';
-    });
+        //const subjectValue = '@ViewBag.SubjectValue';
+    //});
+
+    function submitForm()
+    {
+        const statusSelector = document.getElementById("statusSelector");
+        var selectedStatusTextbox = document.getElementById("SelectedStatus");
+        selectedStatusTextbox.value = statusSelector.options[statusSelector.selectedIndex].value;
+        
+        const subjectSelector = document.getElementById("subjectSelector");
+
+        var selectedSubjectTextbox = document.getElementById("SelectedSubject");
+        
+        selectedSubjectTextbox.value = subjectSelector.options[subjectSelector.selectedIndex].value;
+     
+        document.getElementById("billForm").submit();
+    }
 </script>
 
     
