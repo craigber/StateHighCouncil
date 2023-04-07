@@ -9,7 +9,7 @@
         <div class="col-11">
             <div class="row">
                 <h1>
-                    Rep. @Html.DisplayFor(model => model.Name)
+                    Sen. @Html.DisplayFor(model => model.Name)
                     @if (Model.Party == "R")
                     {
                         <img src="\images\republicanlogo.jpg" style="width:30px;height:30px" />
@@ -138,16 +138,6 @@
                 </div>
             }
 
-
-            @if (!string.IsNullOrEmpty(Model.Profession))
-            {
-                <div class="row">
-                    <div class="col-12">
-                        <i class="fa-regular fa-industry"> </i> @Html.DisplayFor(model => model.Industry)
-                    </div>
-                </div>
-            }
-            
             @if (!string.IsNullOrEmpty(Model.ProfessionalAffiliations))
             {
                 <div class="row">

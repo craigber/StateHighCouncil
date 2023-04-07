@@ -17,14 +17,19 @@
             </select>
             @Html.Hidden("SelectedStatus", null, new { @id = "SelectedStatus" })
         </div>
-        <div class="col-8">
-            <span class="fw-bold text-white">Subject: </span>
-            <select asp-for="SelectedSubject" asp-items="Model.Subjects" name="subjectSelector" id="subjectSelector" onchange="submitForm();">
-            </select>
-            @Html.Hidden("SelectedSubject", null, new { @id = "SelectedSubject" })
-        </div>
-        <div class="col-1">
-            <span class="badge bg-light text-black"><i class="fa-solid fa-circle-xmark"></i> Clear All</span>
+        <div class="col-9">
+            <span>
+                <span class="fw-bold text-white">Subject: </span>
+                <select asp-for="SelectedSubject" asp-items="Model.Subjects" name="subjectSelector" id="subjectSelector" onchange="submitForm();">
+                </select>
+                @Html.Hidden("SelectedSubject", null, new { @id = "SelectedSubject" })
+            </span>
+            @*<span>
+                <button type="button" class="btn btn-light text-black" onclick="clearAllFilters();"><i class='fa-solid fa-filter-circle-xmark'></i> Clear filters</button>
+                <textbox asp-for="ShouldClearAllFilters" hidden id="shouldClearAllFilters" name="shouldClearAllFilters"></textbox>
+                <button type="button" class="btn btn-light text-black" onclick="clearAllStatus();"><i class='fa-solid fa-circle-xmark'></i> Clear status</button>
+                <textbox hidden asp-for="ShouldClearAllStatus" id="shouldClearAllStatus" name="shouldClearAllStatus"></textbox>
+            </span>*@
         </div>
     </div>
 </form>
@@ -39,10 +44,6 @@ else
 {
     <div>
         <div class="mt-4">
-            @if(!Model.Bills.Any(i => i.Status =="New"))
-            {
-                <h5>There are no new bills at this time</h5>
-            }
             @foreach (var item in Model.Bills)
             {
                 <div id=@("div-"+item.Id) class="row justify-content-start mb-4 py-3 bg-light">
@@ -81,7 +82,7 @@ else
                     </div>
                     <div class="col-6">
                         <div class="row">
-                            <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><h5>@item.ShortTitle</h5></a>
+                            <h5>@item.ShortTitle <a href="@item.BillUrl" target="_blank" rel="noopener noreferrer"><i class="fa-regular fa-arrow-up-right-from-square"></i></a></h5>
                         </div>
                         <div class="row">
                             <span>@item.GeneralProvisions</span>
@@ -91,7 +92,7 @@ else
                         </div>
                         <hr />
                         <div class="row">
-                            <span>@item.LastAction | @item.LastActionOwner</span>
+                            <span>@item.LastAction | @item.LastActionOwner | @item.LastActionTime</span>
                         </div>
                     </div>
                     <div class="col-4">
@@ -169,21 +170,6 @@ else
 }
 
 <script>
-    //window.addEventListener("load", () => {
-        //setCurrentStatus();
-        //loadSubjects();
-
-        //const statusValue = '@ViewBag.StatusValue';
-        //const statusSelector = document.getElementById('statusSelector');
-        //const statusOptions = Array.from(statusSelector.option);
-        //const statusOption = options.find(item => it.text == statusValue);
-        //statusOption.selected = true;
-
-
-
-        //const subjectValue = '@ViewBag.SubjectValue';
-    //});
-
     function submitForm()
     {
         const statusSelector = document.getElementById("statusSelector");
@@ -191,11 +177,27 @@ else
         selectedStatusTextbox.value = statusSelector.options[statusSelector.selectedIndex].value;
         
         const subjectSelector = document.getElementById("subjectSelector");
-
         var selectedSubjectTextbox = document.getElementById("SelectedSubject");
-        
         selectedSubjectTextbox.value = subjectSelector.options[subjectSelector.selectedIndex].value;
      
+        document.getElementById("billForm").submit();
+    }
+
+    function clearAllStatus()
+    {
+        //alert("status before-" + document.getElementById("shouldClearAllStatus").value)
+        //document.getElementById("shouldClearAllStatus").value = "true";
+        //alert("status after-" + document.getElementById("shouldClearAllStatus").value)
+
+        clearAllStatus();
+        document.getElementById("billForm").submit();
+    }
+
+    function clearAllFilters()
+    {
+        alert("filter before-" + document.getElementById("shouldClearAllFilters").value)
+        document.getElementById("shouldClearAllFilters").value = "true";
+        alert("filter after-" + document.getElementById("shouldClearAllFilters").value);
         document.getElementById("billForm").submit();
     }
 </script>

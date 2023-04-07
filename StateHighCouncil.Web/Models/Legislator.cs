@@ -41,6 +41,8 @@ public class Legislator
     public DateTime WhenLastUpdated { get; set; }
     virtual public List<Conflict> Conflicts { get; set; }
     public string Session { get; set; }
+
+    public string? Industry { get; set; }
 }
 
 

@@ -87,6 +87,14 @@ function clearStatus(billId) {
     })()
 }
 
+function clearLegislatorStatus(id) {
+    (async () => {
+        const response = await fetch('/Api/ClearLegislatorStatus?id=' + id);
+        const data = await response.json();
+        document.getElementById("badge" + id).remove();
+    })()
+}
+
 function loadSessions() {
     var select = document.getElementById("sessionSelector");
     var option = document.createElement('option');
@@ -106,4 +114,12 @@ function setSession() {
     var select = document.getElementById("sessionSelector");
     var value = select.value;
     location.reload(true);
+}
+
+function clearStatusFilters() {
+    (async () => {
+        const response = await fetch('/Api/ClearFilters');
+
+        const data = await response.json();
+    })()
 }

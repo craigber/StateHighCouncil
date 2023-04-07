@@ -14,6 +14,8 @@ public class LegislatorViewModel
     public int District { get; set; }
     public string? ServiceStart { get; set; }
     public string? Profession { get; set; }
+
+    public string? Industry { get; set; }
     public string? ProfessionalAffiliations { get; set; }
     public string? Education { get; set; }
     public string? RecognitionsAndHonors { get; set; }

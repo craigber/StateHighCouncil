@@ -8,6 +8,8 @@ namespace StateHighCouncil.Web.Models
         public string SelectedSubject { get; set;}
         public SelectList Statuses { get; set; }
         public SelectList Subjects { get; set; }
+        public string ShouldClearAllStatus { get; set; }
+        public string ShouldClearAllFilters { get; set; }
         public List<BillItemViewModel> Bills { get; set; }
     }
 }

@@ -11,9 +11,14 @@
         public string Counties { get; set; }
         public int District { get; set; }
         public string Profession { get; set; }
+        public string Industry { get; set; }
         public string Status { get; set; }
         public string Party { get; set; }
         public string Religion { get; set; }
         public string Education { get; set; }
+        public int SponsorFiledCount { get; set; }
+        public int FloorSponsorFiledCount { get; set; }
+        public int SponsorPassedCount { get; set; }
+        public int FloorSponsorPassedCount { get; set; }
     }
 }

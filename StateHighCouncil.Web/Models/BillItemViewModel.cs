@@ -34,5 +34,7 @@ namespace StateHighCouncil.Web.Models
         public string Status { get; set; }
         public DateTime? WhenPassed {  get; set; }
         public string Subjects { get; set; }
+        public string? PlusMinus { get; set; }
+        public string? Commentary { get; set; }
     }
 }

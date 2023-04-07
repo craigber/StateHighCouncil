@@ -31,6 +31,8 @@ namespace StateHighCouncil.Web.Models
         public DateTime WhenLastUpdated { get; set; }
         public DateTime WhenPassed { get; set; }
         public string Session { get; set; }
+        public string? PlusMinus { get; set; }
+        public string? Commentary { get; set; }
         //public List<ActionHistory> ActionHistories { get; set; }
     }
 }

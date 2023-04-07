@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using StateHighCouncil.Web.Data;
@@ -30,6 +32,8 @@ public class BillService : IBillService
         {
             SelectedStatus = setting.Status,
             SelectedSubject = setting.Subject,
+            ShouldClearAllStatus = "false",
+            ShouldClearAllFilters = "false",
             Statuses = await LoadStatusesAsync(setting.Status),
             Subjects = await LoadSubjectsAsync(setting.Subject),
             Bills = await LoadBillsAsync(setting.Status, setting.Subject)
@@ -43,18 +47,65 @@ public class BillService : IBillService
         var selectedStatus = string.IsNullOrEmpty(model.SelectedStatus) ? "All" : model.SelectedStatus;
         var selectedSubject = string.IsNullOrEmpty(model.SelectedSubject) ? "All" : model.SelectedSubject;
 
+        if (model.ShouldClearAllStatus == "true")
+        {
+            await ClearAllAsync(model.SelectedStatus);
+        }
+        
         var setting = GetSystemSettings(selectedStatus, selectedSubject);
 
+       
         var viewModel = new BillViewModel
         {
             SelectedStatus = setting.Status,
             SelectedSubject = setting.Subject,
+            ShouldClearAllStatus = "false",
+            ShouldClearAllFilters = "false",
             Statuses = await LoadStatusesAsync(selectedStatus),
             Subjects = await LoadSubjectsAsync(selectedSubject),
             Bills = await LoadBillsAsync(setting.Status, setting.Subject)
         };
 
         return viewModel;
+    }
+
+    private async Task<int> ClearAllAsync(string status)
+    {
+        var count = 0;
+
+        if (_selectedSession.IsSelected && _selectedSession.IsCurrent)
+        {
+            List<Bill> bills;
+
+            if (status == "New" || status == "Updated")
+            {
+                bills = await _context.Bills
+                    .Where(b => b.Session == _selectedSession.StateId
+                        && b.Status == status)
+                    .ToListAsync();
+            }
+            else if (status == "Tracked")
+            {
+                bills = await _context.Bills
+                    .Where(b => b.Session == _selectedSession.StateId
+                         && b.IsTracked)
+                    .ToListAsync();
+            }
+            else
+            {
+                bills = await _context.Bills
+                    .Where(b => b.Session == _selectedSession.StateId)
+                    .ToListAsync();
+            }
+            foreach(var bill in bills)
+            {
+                bill.Status = "";
+                _context.Bills.Update(bill);
+            }
+            count = await _context.SaveChangesAsync();
+        }
+
+        return count;
     }
 
     private SystemSetting GetSystemSettings(string status, string subject)
@@ -232,7 +283,9 @@ public class BillService : IBillService
                         IsTracked = bill.IsTracked,
                         Status = bill.Status,
                         WhenPassed = bill?.WhenPassed,
-                        Subjects = ConcatSubjects(bill.Id)
+                        Subjects = ConcatSubjects(bill.Id),
+                        PlusMinus = bill.PlusMinus,
+                        Commentary = bill.Commentary
                     };
                     billItems.Add(vm);
                 }

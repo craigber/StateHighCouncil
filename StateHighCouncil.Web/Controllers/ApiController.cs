@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using StateHighCouncil.Web.Data;
 using StateHighCouncil.Web.Models;
 
@@ -13,6 +14,17 @@ public class ApiController : Controller
     {
         _context = context;
         _selectedSession = _context.Sessions.Where(s => s.IsSelected).FirstOrDefault();
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> ClearFilters()
+    {
+        var setting = (_context.SystemSettings).FirstOrDefault();
+        setting.Status = "All";
+        setting.Subject = "All";
+        _context.SystemSettings.Update(setting);
+        await _context.SaveChangesAsync();
+        return Json(true);
     }
 
     [HttpGet]
@@ -71,5 +83,25 @@ public class ApiController : Controller
             return Json(true);
         }
         return Json(false);
+    }
+
+    public async Task<JsonResult> ClearLegislatorStatus(int id)
+    {
+        if (id < 1)
+        {
+            return Json(false);
+        }
+
+        var leg = _context.Legislators.Where(l => l.Id == id).FirstOrDefault();
+
+        if (leg == null)
+        {
+            return Json(false);
+        }
+
+        leg.Status = "";
+        _context.Legislators.Update(leg);
+        await _context.SaveChangesAsync();
+        return Json(true);
     }
 }

@@ -2,11 +2,12 @@
 
 
 - Componentize House page - partial View? 
-- Add Senate page
-- Add subjects to Legislator Bill page
 - Edit page for legislators
-- Make legislator roster be "by session"
-- Enable Clear Status on Legislator page
+- Bill graph on Legislators List
+- Bill graph on Legislators Detail
+- Tracking from Legsilator's Detail page
+===============
+- Add Senate pages
 ===============
 - Componentize Bills page - partial view
 - Fix Bill pages so Senators link to Senate page
@@ -17,6 +18,8 @@
 - Session management screen
 ===============
 - Tracked bills for home page
+- +/- for tracked bills
+- Bill commentary
 ===============
 - Graphs
     - Line: Filed vs Passed counts by day

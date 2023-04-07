@@ -13,14 +13,13 @@ using StateHighCouncil.Web.Services;
 
 namespace StateHighCouncil.Web.Controllers
 {
-    public class HouseController
-        : Controller
+    public class SenateController : Controller
     {
         private readonly DataContext _context;
         private readonly ILegislatorService _service;
         private readonly IAlertService _alertService;
 
-        public HouseController(DataContext context,
+        public SenateController(DataContext context,
             ILegislatorService service,
             IAlertService alertService)
         {
@@ -32,8 +31,8 @@ namespace StateHighCouncil.Web.Controllers
           public async Task<IActionResult> Index()
         {
             ViewData["SessionMessage"] = _alertService.GetSessionMessage();
-            ViewData["Title"] = "House of Representatives";
-            var viewModel = await _service.GetLegislatorsListAsync("H");
+            ViewData["Title"] = "Senate";
+            var viewModel = await _service.GetLegislatorsListAsync("S");
             return viewModel != null && viewModel.Any() ?
                         View(viewModel) :
                         Problem("Entity set 'DataContext.Legislators'  is null.");
@@ -54,7 +53,7 @@ namespace StateHighCouncil.Web.Controllers
             }
 
             ViewData["SessionMessage"] = _alertService.GetSessionMessage();
-            ViewData["Title"] = "Rep. " + viewModel.Name;
+            ViewData["Title"] = "Sen. " + viewModel.Name;
             return View(viewModel);
         }
 
@@ -79,25 +78,18 @@ namespace StateHighCouncil.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,StateId,ImageUrl,House,Party,Position,District,ServiceStart,Profession,ProfessionalAffiliations,Education,RecognitionsAndHonors,Counties,Address,Email,Cell,WorkPhone,LegislationUrl,DemographicUrl,Religion,Gender,Status,TwitterUrl,FacebookUrl,HomePhone,Bio,Fax,InstagramUrl,WhenAdded,WhenLastUpdated,Session,Industry")] Legislator legislator)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,StateId,ImageUrl,House,Party,Position,District,ServiceStart,Profession,ProfessionalAffiliations,Education,RecognitionsAndHonors,Counties,Address,Email,Cell,WorkPhone,LegislationUrl,DemographicUrl,Religion,Gender,Status,TwitterUrl,FacebookUrl,HomePhone,Bio,Fax,InstagramUrl,WhenAdded,WhenLastUpdated")] Legislator legislator)
         {
             if (id != legislator.Id)
             {
                 return NotFound();
             }
 
-            //if (ModelState.IsValid)
-            //{
+            if (ModelState.IsValid)
+            {
                 try
                 {
-                    var current = _context.Legislators
-                        .Where(l => l.Id == legislator.Id).FirstOrDefault();
-
-                    current.Religion = legislator.Religion;
-                    current.Gender = legislator.Gender;
-                    current.Industry = legislator.Industry;
-                
-                    _context.Update(current);
+                    _context.Update(legislator);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -112,7 +104,7 @@ namespace StateHighCouncil.Web.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            //}
+            }
             return View(legislator);
         }
 

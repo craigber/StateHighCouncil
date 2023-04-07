@@ -49,4 +49,68 @@ public class BillController : Controller
         //return View("Index");
         return View(viewModel);
     }
+
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null || _context.Bills == null)
+        {
+            return NotFound();
+        }
+
+        var bill = await _context.Bills.FindAsync(id);
+        if (bill == null)
+        {
+            return NotFound();
+        }
+        var viewModel = new BillEditViewModel
+        {
+            Id = bill.Id,
+            PlusMinus = bill.PlusMinus,
+            Commentary = bill.Commentary,
+            IsTracked = bill.IsTracked,
+            Status = bill.Status
+        };
+        return View(viewModel);
+    }
+
+    // POST: House/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, [Bind("Id,PlusMinus,Commentary,IsTracked,Status")] BillEditViewModel viewModel)
+    {
+        if (id != viewModel.Id)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            var current = _context.Bills
+                .Where(b => b.Id == viewModel.Id).FirstOrDefault();
+
+            current.PlusMinus = viewModel.PlusMinus;
+            current.Commentary = viewModel.Commentary;
+            current.IsTracked = viewModel.IsTracked;
+            current.Status = viewModel.Status;
+
+            _context.Update(current);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            //if (!LegislatorExists(legislator.Id))
+            //{
+            //    return NotFound();
+            //}
+            //else
+            //{
+                throw;
+            //}
+        }
+        return RedirectToAction(nameof(Index));
+        //}
+        return View(legislator);
+    }
 }

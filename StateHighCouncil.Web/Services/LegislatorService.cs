@@ -24,9 +24,15 @@ namespace StateHighCouncil.Web.Services
                     .Where(l => l.House == house && l.Session == _selectedSession.StateId)
                     .OrderBy(l => l.District);
 
+                var bills = _context.Bills
+                    .Where(s => s.Session == _selectedSession.StateId);
+
                 var viewModel = new List<LegislatorListViewModel>();
                 foreach (var l in legislators)
                 {
+                    var legBills = bills.Where(b => b.SponsorId == l.Id
+                        || b.FloorSponsorId == l.Id);
+
                     var newLegsilator = new LegislatorListViewModel
                     {
                         Id = l.Id,
@@ -38,10 +44,19 @@ namespace StateHighCouncil.Web.Services
                         Counties = l.Counties,
                         District = l.District,
                         Profession = l.Profession,
+                        Industry = l.Industry,
                         Status = l.Status,
                         Party = l.Party,
                         Religion = l.Religion,
-                        Education = l.Education
+                        Education = l.Education,
+                        SponsorFiledCount = legBills
+                            .Count(b => b.SponsorId == l.Id),
+                        SponsorPassedCount = legBills
+                            .Count(b => b.SponsorId == l.Id && b.WhenPassed > new DateTime(1, 1, 1)),
+                        FloorSponsorFiledCount = legBills
+                            .Count(b => b.FloorSponsorId == l.Id),
+                        FloorSponsorPassedCount = legBills
+                            .Count(b => b.FloorSponsorId == l.Id && b.WhenPassed > new DateTime(1, 1, 1))
                     };
                     viewModel.Add(newLegsilator);
                 }
@@ -85,6 +100,7 @@ namespace StateHighCouncil.Web.Services
                 District = legislator.District,
                 ServiceStart = legislator.ServiceStart,
                 Profession = legislator.Profession,
+                Industry = legislator.Industry,
                 ProfessionalAffiliations = legislator.ProfessionalAffiliations,
                 Education = legislator.Education,
                 RecognitionsAndHonors = legislator?.RecognitionsAndHonors,
